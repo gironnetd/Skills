@@ -1,0 +1,531 @@
+<?xml version="1.0"?>
+
+<project name="Admin Yolaine" default="list" basedir=".">
+
+    <property name="application.name" value="Yolaine"/>
+
+    <!-- =================================================================== -->
+    <!-- Variables                                                           -->
+    <!-- =================================================================== -->
+
+    <property name="home.dir" value="${basedir}"/>
+    <property name="lib.dir" value="${home.dir}/lib"/>
+
+    <!--Yolaine Properties-->
+    <property name="yolaine.home" value="${home.dir}"/>
+    <property name="yolaine.build.dir" value="${yolaine.home}/build"/>
+    <property name="yolaine.config.dir" value="${yolaine.home}/config"/>
+
+    <property environment="env"/>
+    <property name="glassfish.home" value="../Glassfish"/>
+    <property name="glassfish.lib" value="${glassfish.home}/lib"/>
+
+	<property name="asadmin" value="${glassfish.home}/bin/asadmin"/>
+
+    <!-- Lorsque la variable echo vaut 'true' les commandes sont affichées dans la console -->
+    <property name="echo" value="true"/>
+
+    <property name="server.host" value="localhost"/>
+    <property name="server.port" value="8080"/>
+    <property name="server.admin.port" value="8282"/>
+    <property name="server.jms.port" value="7676"/>
+    <property name="server.user.name" value="admin"/>
+    <property name="server.passwordfile" value="${home.dir}/passwordfile"/>
+
+    <!--Base de données-->
+    <property name="db.host" value="localhost"/>
+    <property name="db.sid" value="${application.name}DB"/>
+    <property name="db.user" value="dbuser"/>
+    <property name="db.password" value="dbpwd"/>
+    <property name="jdbc.pool.name" value="${application.name}Pool"/>
+    <property name="jdbc.datasource.name" value="jdbc/${application.name}DS"/>
+    <property name="derby.home" value="${glassfish.home}/javadb"/>
+    <property name="derby.lib" value="${derby.home}/lib"/>
+
+    <!--Pour Derby-->
+    <property name="db.port" value="1527"/>
+    <property name="db.datasource" value="org.apache.derby.jdbc.ClientDataSource"/>
+    <property name="db.url" value="jdbc:derby://${db.host}:${db.port}/${db.sid}"/>
+    <property name="db.driver" value="org.apache.derby.jdbc.ClientDriver"/>
+
+    <!--Pour MySQL-->
+<!--    <property name="mysql.home" value="/usr/local/mysql"/>-->
+<!--    <property name="db.port" value="3306"/>-->
+<!--    <property name="db.datasource" value="com.mysql.jdbc.jdbc2.optional.MysqlDataSource"/>-->
+<!--    <property name="db.url" value="jdbc:mysql://${db.host}:${db.port}/${db.sid}"/>-->
+
+    <!--JMS et IMQ-->
+    <property name="imq.home" value="${glassfish.home}/imq"/>
+    <property name="imq.lib" value="${imq.home}/lib"/>
+    <property name="qbrowser.dir" value="${imq.home}/demo/applications/qbrowser"/>
+    <property name="jms.connection.factory.name" value="jms/${application.name}ConnectionFactory"/>
+    <property name="jms.topic" value="jms/topic/order"/>
+
+    <path id="classpath">
+        <!--Pour Derby-->
+        <pathelement location="${derby.lib}/derbytools.jar"/>
+        <pathelement location="${derby.lib}/derbyclient.jar"/>
+        <pathelement location="${derby.lib}/derby.jar"/>
+        <!--Pour MySQL-->
+<!--        <pathelement location="${glassfish.lib}/mysql-connector-java-commercial-5.1.14-bin.jar"/>-->
+    </path>
+
+    <path id="qbrowser.classpath">
+        <pathelement location="${imq.lib}/imq.jar"/>
+        <pathelement location="${imq.lib}/jms.jar"/>
+        <pathelement location="${qbrowser.dir}"/>
+    </path>
+
+    <!-- =================================================================== -->
+    <!-- Check variable                                                      -->
+    <!-- =================================================================== -->
+    <target name="check">
+        <fail unless="env.GLASSFISH_HOME">
+            ####
+            #### You must install GlassFish V2 from https://glassfish.dev.java.net/public/downloadsindex.html
+            #### And set the GLASSFISH_HOME variable
+        </fail>
+    </target>
+
+
+<!--    <taskdef resource="org/apache/tools/ant/taskdefs/optional/jdbc.properties"-->
+<!--             classpath="${ant.home}/lib/ant-jdbc.jar"/>-->
+
+    <!-- =================================================================== -->
+    <!-- Domaine                                                             -->
+    <!-- =================================================================== -->
+
+    <target name="create-domain" description="creates application server Yolaine domain" depends="check">
+        <echo message="Creating ${application.name} domain for ${glassfish.home}"/>
+        <exec executable="${asadmin}" failonerror="true" dir="${glassfish.home}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile=${server.passwordfile}"/>
+            <arg line=" create-domain"/>
+            <arg line=" --adminport=${server.admin.port}"/>
+            <arg line=" --instanceport=${server.port}"/>
+            <arg line=" ${application.name}"/>
+<!--            <arg line=" &#45;&#45;passwordfile ${server.passwordfile}"/>-->
+        </exec>
+    </target>
+    
+    <target name="start-domain" description="starts application server Yolaine domain" depends="check">
+        <echo message="Starting ${application.name} domain for ${glassfish.home}"/>
+        <exec executable="${asadmin}" failonerror="true" dir="${glassfish.home}">
+            <arg line=" start-domain"/>
+            <arg line=" --echo=${echo}"/>
+            <arg line=" ${application.name}"/>
+        </exec>
+    </target>
+
+    <target name="start-domain-debug" description="starts application server Yolaine domain with debug" depends="check">
+        <echo message="Starting ${application.name} domain for ${glassfish.home} with debug"/>
+        <exec executable="${asadmin}" failonerror="true" dir="${glassfish.home}">
+            <arg line=" start-domain"/>
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --debug"/>
+            <arg line=" ${application.name}"/>
+        </exec>
+    </target>
+
+    <target name="stop-domain" description="stops application server Yolaine domain" depends="check">
+        <echo message="Stopping ${application.name} domain for ${glassfish.home}"/>
+        <exec executable="${asadmin}" failonerror="true" dir="${glassfish.home}">
+            <arg line=" stop-domain"/>
+            <arg line=" --echo=${echo}"/>
+            <arg line=" ${application.name}"/>
+        </exec>
+    </target>
+
+    <target name="delete-domain" description="deletes application server Yolaine domain" depends="check">
+        <echo message="Deleting ${application.name} domain for ${glassfish.home}"/>
+        <exec executable="${asadmin}" failonerror="true" dir="${glassfish.home}">
+            <arg line=" delete-domain"/>
+            <arg line=" --echo=${echo}"/>
+            <arg line=" ${application.name}"/>
+        </exec>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Base de données                                                     -->
+    <!-- =================================================================== -->
+    <target name="start-datasource" description="starts the databse server." depends="check">
+        <exec executable="${asadmin}" failonerror="true" dir="${glassfish.home}">
+            <arg value="start-database"/>
+            <arg line=" --echo=${echo}"/>
+            <arg value="--dbhost=${db.host}"/>
+            <arg value="--dbport=${db.port}"/>
+            <arg value="--dbhome=${derby.home}"/>
+        </exec>
+    </target>
+
+    <target name="stop-datasource" description="stops the database server." depends="check">
+        <exec executable="${asadmin}" failonerror="true" dir="${glassfish.home}">
+            <arg value="stop-database"/>
+            <arg line=" --echo=${echo}"/>
+            <arg value="--dbhost=${db.host}"/>
+            <arg value="--dbport=${db.port}"/>
+        </exec>
+    </target>
+
+    <target name="verify-datasource" depends="check">
+        <java classname="org.apache.derby.tools.sysinfo" fork="yes" dir=".">
+            <classpath refid="classpath"/>
+        </java>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!-- JDBC                                                                -->
+    <!-- =================================================================== -->
+    <target name="create-connection-pool" description="creates jdbc connection pool" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="create-jdbc-connection-pool"/>
+            <arg line=" --datasourceclassname ${db.datasource}"/>
+            <arg line=" --restype javax.sql.XADataSource"/>
+            <arg line=" --property portNumber=${db.port}:serverName=${server.host}:User=${db.user}:Password=${db.password}:databaseName=${db.sid}:connectionAttributes=\;create\=true"/>
+            <arg line=" ${jdbc.pool.name}"/>
+        </exec>
+    </target>
+
+    <target name="create-jdbc-resource" description="creates jdbc datasource" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="create-jdbc-resource"/>
+            <arg line=" --connectionpoolid ${jdbc.pool.name}"/>
+            <arg line=" --enabled=true"/>
+            <arg line=" ${jdbc.datasource.name}"/>
+        </exec>
+    </target>
+
+    <target name="ping-connection-pool" description="ping the jdbc connection pool" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="ping-connection-pool"/>
+            <arg line=" ${jdbc.pool.name}"/>
+        </exec>
+    </target>
+
+    <target name="list-connection-pool" description="lists jdbc connection pool" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="list-jdbc-connection-pools"/>
+        </exec>
+    </target>
+
+    <target name="list-datasource" description="lists jdbc datasource" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="list-jdbc-resources"/>
+        </exec>
+    </target>
+
+    <target name="delete-connection-pool" description="deletes jdbc connection pool" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="delete-jdbc-connection-pool"/>
+            <arg line="${jdbc.pool.name}"/>
+        </exec>
+    </target>
+
+    <target name="delete-datasource" description="deletes jdbc resource" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="delete-jdbc-resource"/>
+            <arg line="${jdbc.datasource.name}"/>
+        </exec>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!-- JNDI                                                                -->
+    <!-- =================================================================== -->
+    <target name="list-jndi-resources" description="lists jndi entries" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="list-jndi-resources"/>
+        </exec>
+    </target>
+
+    <target name="list-jndi" description="lists jndi entries" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="list-jndi-entries"/>
+        </exec>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!-- JMS                                                                 -->
+    <!-- =================================================================== -->
+    <target name="compile-qbrowser" description="compile QBrowser application" depends="check">
+        <echo message="Compile QBrowser application"/>
+        <javac srcdir="${qbrowser.dir}"
+               destdir="${qbrowser.dir}">
+            <classpath refid="qbrowser.classpath"/>
+        </javac>
+    </target>
+
+    <target name="run-qbrowser" description="browse jms destinations" depends="compile-qbrowser">
+        <echo message="Runs QBrowser application"/>
+        <echo message="${qbrowser.dir}"/>
+        <java classname="QBrowser" fork="yes" dir=".">
+            <jvmarg value="-DimqAddressList=mq://${server.host}:${server.jms.port}/jms"/>
+            <classpath refid="qbrowser.classpath"/>
+        </java>
+    </target>
+
+    <target name="create-jms-connection-factory" description="creates jms connection factory" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="create-jms-resource"/>
+            <arg line=" --restype javax.jms.ConnectionFactory"/>
+            <arg line=" --enabled=true"/>
+            <arg line=" ${jms.connection.factory.name}"/>
+        </exec>
+    </target>
+
+    <target name="create-jms-topic" description="create JMS topic" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="create-jms-resource"/>
+            <arg line=" --restype javax.jms.Topic"/>
+            <arg line=" --enabled=true"/>
+            <arg line=" --property Name=OrderTopic"/>
+            <arg line=" ${jms.topic}"/>
+        </exec>
+    </target>
+
+    <target name="list-jms-resources" description="lists jms destinations" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="list-jms-resources"/>
+        </exec>
+    </target>
+
+    <target name="delete-jms-connection-factory" description="creates jms connection factory" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="delete-jms-resource"/>
+            <arg line=" ${jms.connection.factory.name}"/>
+        </exec>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!-- Java Mail                                                           -->
+    <!-- =================================================================== -->
+    <target name="create-javamail-resource" description="creates javamail resource" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="create-javamail-resource"/>
+            <arg line=" --mailhost toto"/>
+            <arg line=" --mailuser toto"/>
+            <arg line=" --fromaddress toto"/>
+            <arg line=" toto"/>
+        </exec>
+    </target>
+
+    <target name="delete-javamail-resource" description="deletes javamail resource" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="delete-javamail-resource"/>
+            <arg line=" toto"/>
+        </exec>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Loggers                                                             -->
+    <!-- =================================================================== -->
+    <target name="set-loggers" description="set loggers" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="set-log-levels"/>
+            <arg line=" server.log-service.module-log-levels.property.com\.Yolaine=FINEST "/>
+        </exec>        
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!-- Autres                                                              -->
+    <!-- =================================================================== -->
+    <target name="version" description="displays server version" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="version"/>
+            <arg line=" --verbose=true"/>
+        </exec>
+    </target>
+
+    <target name="list-components" description="displays deployed components" depends="check">
+        <exec executable="${asadmin}">
+            <arg line=" --echo=${echo}"/>
+            <arg line=" --user ${server.user.name}"/>
+            <arg line=" --passwordfile ${server.passwordfile}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.admin.port}"/>
+            <arg line="list-components"/>
+        </exec>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Setup                                                               -->
+    <!-- =================================================================== -->
+
+    <target name="setup-environment" description="sets up the environment" depends="check">
+        <antcall target="create-domain"/>
+        <antcall target="start-domain"/>
+        <antcall target="create-connection-pool"/>
+        <antcall target="start-datasource"/>
+        <antcall target="ping-connection-pool"/>
+        <antcall target="create-jdbc-resource"/>
+        <antcall target="create-jms-connection-factory"/>
+        <antcall target="create-jms-topic"/>
+        <antcall target="create-tables-insert-datasource"/>
+        <antcall target="set-loggers"/>
+    </target>
+
+    <target name="clear-environment" description="clear the environment" depends="check">
+        <antcall target="delete-datasource"/>
+        <antcall target="drop-datasource"/>
+        <antcall target="stop-datasource"/>
+        <antcall target="stop-domain"/>
+        <antcall target="delete-domain"/>
+    </target>
+
+    <target name="list" description="list all components" depends="check">
+        <antcall target="list-connection-pool"/>
+        <antcall target="list-datasource"/>
+        <antcall target="list-jms-resources"/>
+        <antcall target="list-jndi"/>
+        <antcall target="list-components"/>
+    </target>
+
+<!--    <taskdef name="sql" classname="org.apache.tools.ant.taskdefs.JDBCTask"-->
+<!--             classpath="lib/ant-jdbc.jar"/>-->
+
+    <!-- =================================================================== -->
+    <!-- Créer les tables de la base de données                              -->
+    <!-- =================================================================== -->
+
+    <target name="create-tables-datasource">
+        <sql src="${yolaine.config.dir}/create.sql"
+             driver="${db.driver}"
+             url="${db.url}"
+             userid="${db.user}"
+             password="${db.pwd}">
+            <classpath refid="classpath"/>
+        </sql>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Jeter les tables de la base de données                              -->
+    <!-- =================================================================== -->
+
+    <target name="drop-datasource">
+        <sql src="${yolaine.config.dir}/drop.sql"
+             driver="${db.driver}"
+             url="${db.url}"
+             userid="${db.user}"
+             password="${db.pwd}">
+            <classpath refid="classpath"/>
+        </sql>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Insérer les données                                                 -->
+    <!-- =================================================================== -->
+
+    <target name="create-tables-insert-datasource">
+        <sql src="${yolaine.config.dir}/data.sql"
+             driver="${db.driver}"
+             url="${db.url}"
+             userid="${db.user}"
+             password="${db.pwd}">
+            <classpath refid="classpath"/>
+        </sql>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Éffacer les données                                                 -->
+    <!-- =================================================================== -->
+
+    <target name="db-delete-data">
+        <sql src="${yolaine.config.dir}/delete.sql"
+             driver="${db.driver}"
+             url="${db.url}"
+             userid="${db.user}"
+             password="${db.pwd}">
+            <classpath refid="classpath"/>
+        </sql>
+    </target>
+</project>

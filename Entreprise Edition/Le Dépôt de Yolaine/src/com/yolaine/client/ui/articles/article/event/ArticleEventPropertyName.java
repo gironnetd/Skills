@@ -1,0 +1,26 @@
+package com.yolaine.client.ui.articles.article.event;
+
+
+
+public enum ArticleEventPropertyName {
+    
+    IDENTIFIANT_CHANGED,
+    DEPOT_CHANGED,
+    PAIEMENT_CHANGED,
+    REMBOURSEMENT_CHANGED,
+    CLIENT_ID_CHANGED,
+    TYPEARTICLE_CHANGED,    
+    DATEDEPOT_CHANGED,   
+    MONTANTDEPOT_CHANGED,    
+    PRIXVENTE_CHANGED,
+    MARQUE_CHANGED,
+    TAILLE_CHANGED,
+    COULEUR_1_CHANGED,
+    COULEUR_2_CHANGED,    
+    MANCHE_CHANGED,
+    SOLDE_CHANGED,
+    POURCENTAGE_CHANGED,    
+    SITUATION_CHANGED,    
+    TEXTE_CHANGED,    
+    VERSION_CHANGED        
+}

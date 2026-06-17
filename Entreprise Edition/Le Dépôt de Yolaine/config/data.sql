@@ -1,0 +1,358 @@
+CREATE TABLE t_civilite (ID BIGINT NOT NULL, civilite VARCHAR(30) NOT NULL, PRIMARY KEY (ID));
+CREATE TABLE t_situation (ID BIGINT NOT NULL, situation VARCHAR(255) NOT NULL, PRIMARY KEY (ID));
+CREATE TABLE t_banque (ID BIGINT NOT NULL, banque VARCHAR(255) NOT NULL, PRIMARY KEY (ID));
+CREATE TABLE t_type_identite (ID BIGINT NOT NULL, type_identite VARCHAR(255) NOT NULL, PRIMARY KEY (ID));
+CREATE TABLE t_type_paiement (ID BIGINT NOT NULL, type_paiement VARCHAR(255) NOT NULL, PRIMARY KEY (ID));
+CREATE TABLE t_couleur (ID BIGINT NOT NULL, couleur VARCHAR(255) NOT NULL, PRIMARY KEY (ID));
+CREATE TABLE t_manche (ID BIGINT NOT NULL, manche VARCHAR(255) NOT NULL, PRIMARY KEY (ID));
+CREATE TABLE t_remboursement (ID BIGINT NOT NULL, libelle_Remboursement VARCHAR(255) NOT NULL, commentaire_remboursement VARCHAR(255), date_remboursement VARCHAR(255), montant_rembourse VARCHAR(255), numero_cheque_remboursement VARCHAR(255), type_remboursement_fk BIGINT NOT NULL, banque_remboursement_fk BIGINT NOT NULL, PRIMARY KEY (ID));
+CREATE TABLE t_paiement (ID BIGINT NOT NULL, libelle_paiement VARCHAR(255) NOT NULL, commentaire_vente VARCHAR(255), date_vente VARCHAR(255), numero_banque VARCHAR(255), numero_cheque_paiement VARCHAR(255), prix_vente_reel VARCHAR(255), banque_paiement_fk BIGINT, type_paiement_fk BIGINT, type_identite_fk BIGINT, PRIMARY KEY (ID));
+CREATE TABLE t_adresse (ID BIGINT NOT NULL, adresse_1 VARCHAR(255) NOT NULL, adresse_2 VARCHAR(255), code_postal VARCHAR(255) NOT NULL, ville VARCHAR(255) NOT NULL, PRIMARY KEY (ID));
+CREATE TABLE t_client (ID BIGINT NOT NULL, deposante BOOLEAN NOT NULL, civilite_fk BIGINT NOT NULL, nom VARCHAR(255), prenom VARCHAR(255), login VARCHAR(255), password VARCHAR(255), adresse_fk BIGINT, telephone_fixe VARCHAR(255), telephone_portable VARCHAR(255), email VARCHAR(255), type_identite_fk BIGINT, numero_identite VARCHAR(255), date_naissance VARCHAR(255), commentaire VARCHAR(255), champ_numerique_1 VARCHAR(255), champ_numerique_2 VARCHAR(255), montant_depose VARCHAR(255), montant_du VARCHAR(255), PRIMARY KEY (ID));
+CREATE TABLE t_marque (ID BIGINT NOT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(255), PRIMARY KEY (ID));
+CREATE TABLE t_categorie (ID BIGINT NOT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, PRIMARY KEY (ID));
+CREATE TABLE t_categorie_marque (categorie_fk BIGINT NOT NULL, marque_fk BIGINT NOT NULL);
+CREATE TABLE t_article (ID BIGINT NOT NULL, version INT NOT NULL, depot_fk BIGINT NOT NULL, client_fk BIGINT NOT NULL, categorie_fk BIGINT NOT NULL, marque_fk BIGINT NOT NULL,couleur_1_fk BIGINT NOT NULL, couleur_2_fk BIGINT NOT NULL, taille VARCHAR(255), manche_fk BIGINT NOT NULL, montant_depot VARCHAR(255) NOT NULL, prix_vente VARCHAR(255) NOT NULL, situation_fk BIGINT NOT NULL, solde VARCHAR(255), pourcentage VARCHAR(255), texte VARCHAR(150), date_depot VARCHAR(255), paiement_fk BIGINT NOT NULL, remboursement_fk BIGINT NOT NULL, PRIMARY KEY (ID));
+CREATE TABLE t_depot (ID BIGINT NOT NULL, version INT NOT NULL, client_fk BIGINT NOT NULL, date_depot VARCHAR(255) NOT NULL, cloture_depot VARCHAR(255) NOT NULL, PRIMARY KEY (ID));
+
+ALTER TABLE t_article ADD CONSTRAINT article_depot_fk FOREIGN KEY (depot_fk) REFERENCES t_depot (ID);
+ALTER TABLE t_article ADD CONSTRAINT article_client_fk FOREIGN KEY (client_fk) REFERENCES t_client (ID);
+ALTER TABLE t_article ADD CONSTRAINT article_categorie_fk FOREIGN KEY (categorie_fk) REFERENCES t_categorie (ID);
+ALTER TABLE t_article ADD CONSTRAINT article_marque_fk FOREIGN KEY (marque_fk) REFERENCES t_marque (ID);
+ALTER TABLE t_article ADD CONSTRAINT article_couleur_1_fk FOREIGN KEY (couleur_1_fk) REFERENCES t_couleur (ID);
+ALTER TABLE t_article ADD CONSTRAINT article_couleur_2_fk FOREIGN KEY (couleur_2_fk) REFERENCES t_couleur (ID);
+ALTER TABLE t_article ADD CONSTRAINT article_manche_fk FOREIGN KEY (manche_fk) REFERENCES t_manche (ID);
+ALTER TABLE t_article ADD CONSTRAINT article_situation_fk FOREIGN KEY (situation_fk) REFERENCES t_situation (ID);
+ALTER TABLE t_article ADD CONSTRAINT article_paiement_fk FOREIGN KEY (paiement_fk) REFERENCES t_paiement (ID);
+ALTER TABLE t_article ADD CONSTRAINT article_remboursement_fk FOREIGN KEY (remboursement_fk) REFERENCES t_remboursement (ID);
+
+ALTER TABLE t_depot ADD CONSTRAINT depot_client_fk FOREIGN KEY (client_fk) REFERENCES t_client (ID);
+
+ALTER TABLE t_remboursement ADD CONSTRAINT remboursement_type_fk FOREIGN KEY (type_remboursement_fk) REFERENCES t_type_paiement (ID);
+ALTER TABLE t_remboursement ADD CONSTRAINT remboursement_banque_fk FOREIGN KEY (banque_remboursement_fk) REFERENCES t_banque (ID);
+
+ALTER TABLE t_paiement ADD CONSTRAINT paiement_type_fk FOREIGN KEY (type_paiement_fk) REFERENCES t_type_paiement (ID);
+ALTER TABLE t_paiement ADD CONSTRAINT paiement_banque_fk FOREIGN KEY (banque_paiement_fk) REFERENCES t_banque (ID);
+ALTER TABLE t_paiement ADD CONSTRAINT paiement_type_identite_fk FOREIGN KEY (type_identite_fk) REFERENCES t_type_identite (ID);
+
+ALTER TABLE t_client ADD CONSTRAINT client_civilite_fk FOREIGN KEY (civilite_fk) REFERENCES t_civilite (ID);
+ALTER TABLE t_client ADD CONSTRAINT client_adresse_fk FOREIGN KEY (adresse_fk) REFERENCES t_adresse (ID);
+ALTER TABLE t_client ADD CONSTRAINT client_type_identite_fk FOREIGN KEY (type_identite_fk) REFERENCES t_type_identite (ID);
+
+ALTER TABLE t_categorie_marque ADD CONSTRAINT categorie_fk_marque FOREIGN KEY (categorie_fk) REFERENCES t_categorie (ID);
+ALTER TABLE t_categorie_marque ADD CONSTRAINT categorie_marque_fk FOREIGN KEY (marque_fk) REFERENCES t_marque (ID);
+
+-- Load
+INSERT INTO t_civilite (id, civilite) VALUES (1,'');
+INSERT INTO t_civilite (id, civilite) VALUES (2,'Madame');
+INSERT INTO t_civilite (id, civilite) VALUES (3,'Mademoiselle');
+INSERT INTO t_civilite (id, civilite) VALUES (4,'Monsieur');
+
+INSERT INTO t_situation (id, situation) VALUES (1,'déposé');
+INSERT INTO t_situation (id, situation) VALUES (2,'remboursé');
+INSERT INTO t_situation (id, situation) VALUES (3,'rendu');
+INSERT INTO t_situation (id, situation) VALUES (4,'vendu');
+
+INSERT INTO t_banque (id, banque) VALUES (1,'');
+INSERT INTO t_banque (id, banque) VALUES (2,'BnpParibas');
+INSERT INTO t_banque (id, banque) VALUES (3,'le Crédit Lyonnais');
+INSERT INTO t_banque (id, banque) VALUES (4,'HSBC');
+INSERT INTO t_banque (id, banque) VALUES (5,'Fortis');
+INSERT INTO t_banque (id, banque) VALUES (6,'Crédit agricole');
+INSERT INTO t_banque (id, banque) VALUES (7,'Caisse Épargne');
+INSERT INTO t_banque (id, banque) VALUES (8,'Banque populaire');
+INSERT INTO t_banque (id, banque) VALUES (9,'Société générale');
+INSERT INTO t_banque (id, banque) VALUES (10,'C.I.C.');
+INSERT INTO t_banque (id, banque) VALUES (11,'AXA Banque');
+INSERT INTO t_banque (id, banque) VALUES (12,'Barclays');
+INSERT INTO t_banque (id, banque) VALUES (13,'ING');
+INSERT INTO t_banque (id, banque) VALUES (14,'Groupama banque');
+INSERT INTO t_banque (id, banque) VALUES (15,'Fortuneo');
+INSERT INTO t_banque (id, banque) VALUES (16,'BforBank');
+
+INSERT INTO t_type_identite (id, type_identite) VALUES (1,'');
+INSERT INTO t_type_identite (id, type_identite) VALUES (2,'carte identité');
+INSERT INTO t_type_identite (id, type_identite) VALUES (3,'passeport');
+INSERT INTO t_type_identite (id, type_identite) VALUES (4,'permis de conduire');
+INSERT INTO t_type_identite (id, type_identite) VALUES (5,'titre de séjour');
+
+INSERT INTO t_type_paiement (id, type_paiement) VALUES (1,'');
+INSERT INTO t_type_paiement (id, type_paiement) VALUES (2,'American express');
+INSERT INTO t_type_paiement (id, type_paiement) VALUES (3,'carte bleu');
+INSERT INTO t_type_paiement (id, type_paiement) VALUES (4,'chèque');
+INSERT INTO t_type_paiement (id, type_paiement) VALUES (5,'espèce');
+
+INSERT INTO t_marque (id, name, description) VALUES (1,'','');
+INSERT INTO t_marque (id, name, description) VALUES (2,'ZARA','');
+INSERT INTO t_marque (id, name, description) VALUES (3,'MEXX','');
+INSERT INTO t_marque (id, name, description) VALUES (4,'PABLO','');
+INSERT INTO t_marque (id, name, description) VALUES (5,'Gérard Darel','');
+INSERT INTO t_marque (id, name, description) VALUES (6,'ZAPPA','');
+INSERT INTO t_marque (id, name, description) VALUES (7,'Comptoir des cotonniers','');
+INSERT INTO t_marque (id, name, description) VALUES (8,'Kookaï','');
+INSERT INTO t_marque (id, name, description) VALUES (9,'H & M','');
+INSERT INTO t_marque (id, name, description) VALUES (10,'Lacoste','');
+INSERT INTO t_marque (id, name, description) VALUES (11,'Synequanone','');
+INSERT INTO t_marque (id, name, description) VALUES (12,'morgane','');
+INSERT INTO t_marque (id, name, description) VALUES (13,'somewhere','');
+INSERT INTO t_marque (id, name, description) VALUES (14,'Alain Manoukian','');
+INSERT INTO t_marque (id, name, description) VALUES (15,'Zadig & Voltaire','');
+
+INSERT INTO t_categorie (id, name, description) VALUES (1,'', '');
+INSERT INTO t_categorie (id, name, description) VALUES (2,'pull', '');
+INSERT INTO t_categorie (id, name, description) VALUES (3,'t-shirt', '');
+INSERT INTO t_categorie (id, name, description) VALUES (4,'chemisier', '');
+INSERT INTO t_categorie (id, name, description) VALUES (5,'pantalon', '');
+INSERT INTO t_categorie (id, name, description) VALUES (6,'jupe', '');
+INSERT INTO t_categorie (id, name, description) VALUES(7,'chaussures', '');
+INSERT INTO t_categorie (id, name, description) VALUES (8,'tailleur', '');
+
+INSERT INTO t_couleur (id, couleur) VALUES (1,'');
+INSERT INTO t_couleur (id, couleur) VALUES (2,'argent');
+INSERT INTO t_couleur (id, couleur) VALUES (3,'beige');
+INSERT INTO t_couleur (id, couleur) VALUES (4,'blanc');
+INSERT INTO t_couleur (id, couleur) VALUES (5,'bleu');
+INSERT INTO t_couleur (id, couleur) VALUES (6,'bleu azur');
+INSERT INTO t_couleur (id, couleur) VALUES (7,'bleu clair');
+INSERT INTO t_couleur (id, couleur) VALUES (8,'bleu foncé');
+INSERT INTO t_couleur (id, couleur) VALUES (9,'bleu marine');
+INSERT INTO t_couleur (id, couleur) VALUES (10,'bleu turquoise');
+INSERT INTO t_couleur (id, couleur) VALUES (11,'gris clair');
+INSERT INTO t_couleur (id, couleur) VALUES (12,'gris foncé');
+INSERT INTO t_couleur (id, couleur) VALUES (13,'jaune');
+INSERT INTO t_couleur (id, couleur) VALUES (14,'marron');
+INSERT INTO t_couleur (id, couleur) VALUES (15,'noir');
+INSERT INTO t_couleur (id, couleur) VALUES (16,'or');
+INSERT INTO t_couleur (id, couleur) VALUES (17,'orange');
+INSERT INTO t_couleur (id, couleur) VALUES (18,'rose');
+INSERT INTO t_couleur (id, couleur) VALUES (19,'rouge');
+INSERT INTO t_couleur (id, couleur) VALUES (20,'vert');
+INSERT INTO t_couleur (id, couleur) VALUES (21,'vert clair');
+INSERT INTO t_couleur (id, couleur) VALUES (22,'vert foncé');
+INSERT INTO t_couleur (id, couleur) VALUES (23,'violet');
+
+INSERT INTO t_manche (id, manche) VALUES (1,'');
+INSERT INTO t_manche (id, manche) VALUES (2,'courte');
+INSERT INTO t_manche (id, manche) VALUES (3,'longue');
+
+-- CREATE TABLE t_article (id,  depot_fk, client_fk BIGINT NOT NULL, categorie_fk VARCHAR(255) NOT NULL, marque_fk VARCHAR(255) NOT NULL,couleur_1_fk VARCHAR(255) NOT NULL, couleur_2_fk VARCHAR(255) NOT NULL, taille VARCHAR(255) NOT NULL, manche_fk VARCHAR(255) NOT NULL, montant_depot VARCHAR(255) NOT NULL, prix_vente VARCHAR(255) NOT NULL, situation_fk VARCHAR(255) NOT NULL, solde VARCHAR(255) NOT NULL, pourcentage VARCHAR(255) NOT NULL, texte VARCHAR(255) NOT NULL, date_depot VARCHAR(255) NOT NULL, paiement_fk VARCHAR(255) NOT NULL, remboursement_fk VARCHAR(255) NOT NULL, PRIMARY KEY (id));
+-- CREATE TABLE t_depot (id BIGINT NOT NULL, version INT NOT NULL, client_fk BIGINT NOT NULL, date_depot VARCHAR(255) NOT NULL, cloture_depot VARCHAR(255) NOT NULL, PRIMARY KEY (id));
+-- CREATE TABLE t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk);
+
+INSERT INTO t_remboursement (id, libelle_Remboursement, commentaire_remboursement, date_remboursement, montant_rembourse, numero_cheque_remboursement, type_remboursement_fk, banque_remboursement_fk) VALUES (1,'', NULL, NULL, NULL, NULL, 3, 2);
+
+INSERT INTO t_paiement (id, libelle_paiement, commentaire_vente, date_vente, numero_banque, numero_cheque_paiement, prix_vente_reel, banque_paiement_fk, type_paiement_fk, type_identite_fk) VALUES (1,'', NULL, NULL, NULL, NULL, NULL, NULL, 3, 2);
+
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (1, '14, rue de Fontaine de HENRI IV', NULL, '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (2, '17B, rueA.PETIT', NULL, '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (3, '8, rue Y.LE COZ', NULL, '78000', 'Versailles');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (4, '25, rue general GALLIENY', NULL, '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (5, '36, avenue R.HARDOUIN', NULL, '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (6, '1, boulevard de la liberation', NULL, '78220', 'Virofaly');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (7, '12, avenue du chateau', NULL, '92190', 'Meudon');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (8, '4, rue H.Boucher', NULL, '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (9, '4, rue Henri MALOUET', NULL, '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (10, '12 bis, rue Louis GIRARD', NULL, '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (11, '10, rue FRONVAL', NULL, '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (12, 'HEC 1 rue LIBERATION', NULL, '78350', 'Jouy-en-Josas');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (13, '1, rue de Jouy', NULL, '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (14, '21, rue de la Martiniere', NULL, '78000', 'Versailles');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (15, '1, passage JULIETTE', NULL, '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (16, '20, rue ERLANGER', NULL, '75016', 'Paris');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (17, '2012, avenue R.SALENGRO', NULL, '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (18, '13, rue du 8 mai 1945', NULL, '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (19, '22, Boulevard de la liberation', NULL, '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (20, '10 avenue Saint Paul', NULL, '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (22, '8, Ct_arrefour de la Fonta_ine', NULL, '7822_0', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (23, '83, avenue general LECLERC', NULL, '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (24, '6, rue de Lorraine res.MOZART', NULL, '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (25, '7, rue Champ LAGARDE', NULL, '78000', 'Versailles');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (26, 'xxxxxx', NULL, 'xxxxxx', 'xxxx');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (27, '13 ter, rue des Fontaines', NULL, '92310', 'Sevres');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (28, '3, rue Jean MERMOZ', NULL, '78000', 'Versailles');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (29, 'xxxxxxx', '', 'xxxxxx', 'xxxx');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (30, '2, rue Paul FORT', NULL, '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (31, '8, avenue SAVOIE', NULL, '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (32, '49, rue Albert PERDREAUX', NULL, '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (33, '14, rue Jean MERMOZ', NULL, '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (34, '5, rue Nicolas NICQUET', NULL, '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (35, '12, rue de la Commandine', NULL, '78350', 'LES LOGES EN JOSAS');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (36, '4 ter, rue du Pavé de Meudon', NULL, '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (37, '1974, avenue R.SALENGRO', NULL, '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (38, '10, boulevard de la liberation', NULL, '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (39, '10, allée de Normandie', NULL, '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (40, '19, avenue SAVOIE', NULL, '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (41, '109, rue LAVOISSIER', NULL, '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (42, '8, impasse Roger MAHIEU', NULL, '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (43, '42, rue du Louvre', NULL, '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (44, '34, rue de VILLACOUBLAY-VELIZY', NULL, '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (45, '17, rue Docteur DARIN', NULL, '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (46, '10, rue P.BERT', NULL, '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (47, '19, rue des combattants', NULL, '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (48, '42, rue de Jouy', NULL, '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (49, '6, avenue Gaston BOISSIER', NULL, '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (50, '4, passage Juliette', NULL, '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (51, '72, avenue Gaston BOISSIER', NULL, '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (52, '10, avenue Saint Paul', NULL, '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (53, '3, rue de la MARE ADAM', NULL, '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (54, '16-17, quai Alfonse LEGALLO', NULL, '92100', 'Boulogne');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (55, '36, rue du chemin Vert', '', '92100', 'Boulogne');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (56, '51, avenue General LECLERC', '', '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (57, '155, avenue R.SALENGRO', '', '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (58, '8, rue Alcide DELAPIERRE', '', '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (59, '16, rue du general EXELMANS', '', '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (60, '2 ter, rue Vital FOUCHER', '', '92100', 'Boulogne');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (61, '6, avenue de Provence', '', '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (62, '7, rue D''HASSLOCH', '', '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (63, '24, avenue general LECLERC ', '', '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (64, '26, rue de Villacoublay', '', '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (65, '1077, avenue Roger SALENGRO', '', '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (66, '1, rue L.BLERIOT', '', '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (67, '4, rue du gros Chéne', '', '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (68, '3, rue du pave de Meudon', '', '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (69, '21, rue de l''abbaye aux bois', '', '91570', 'Bievres');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (70, '1, rue de Jouy', 'appt 4134', '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (71, '46, rue du 18 juin', '', '92210', 'Saint Cloud');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (72, '30, rue des combattants', '', '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (73, '45, rue A.PERDREAUX', '', '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (74, '8, rue de la GARENNE', '', '78350', 'les loges-en-josas');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (75, '69, rue Ernest RENAN', '', '92310', 'Sevres');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (76, '85, avenue Saint Cloud', '', '78000', 'Versailles');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (77, '96 bis, avenue de Paris', '', '78000', 'Versailles');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (78, '44, rue general EXELMENS', '', '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (79, '9 bis, rue de la Noel', '', '78280', 'Guyancourt');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (80, '9, rue MOZART', '', '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (81, '40, rue de VERGENNES', '', '78000', 'Versailles');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (82, '1828, avenue R.SALENGRO', '', '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (83, '23, rue A.PETIT', '', '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (84, '5, allée des Chenes', '', '78350', 'Jouy-en-josas');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (85, '81, avenue Gaston BOISSIER', '', '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (86, '18 bis, avenue Gaston BOISSIER', '', '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (87, '66, rue des oiseaux', '', '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (88, '7, rue Arthur PETIT', '', '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (89, '2, rue H.BOUCHER', '', '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (90, '16 bis, rue POTTIER', '', '78150', 'Le chesnay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (91, '31, rue Arthur PETIT', '', '78220', 'Viroflay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (92, '13, avenue du general De Gaulle', '', '78140', 'Velizy');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (93, '98, Elysee 2', '', '78170', 'La Celle Saint Cloud');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (94, '6, square de BRETEVILLE', '', '78150', 'Le chesnay');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (95, '8, avenue Michel LETELLIER', '', '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (96, '19 bis, rue du pont COLBERT D2', '', '78000', 'Versailles');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (97, '3 bis, impasse A.CALMETTE', '', '78350', 'Jouy-en-josas');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (98, '23, rue du bouquet', '', '92370', 'Chaville');
+INSERT INTO t_adresse (id, adresse_1, adresse_2, code_postal, ville) VALUES (99, '20, rue de la MARQUETTE', '', '78220', 'Viroflay');
+
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (1, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'COQ','810 9784 00 445','', '', '01 41 15 50 62', '06 16 09 41 04', 2, 1, 4);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (2, NULL, NULL, NULL, NULL, FALSE, NULL,'',NULL,NULL, 'ELIA','920301020044','', '', NULL, '06 17 66 48 16', 2, 2, 3);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (3, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'BOCCOLINI','030878400254','', '', NULL, '06 07 41 55 87', 2, 3, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (4, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'LECHARMY','000 978 401 465','', '', '01 30 24 58 44', NULL, 2, 4, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (5, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'TREBOUET','010878401153','', '', '01 30 24 67 82', NULL, 2, 5, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (6, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'LAFOND','021278401810','', '', '01 30 24 04 51', NULL, 2, 6, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (7, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'POTTER','060392 300 871','', '', '01 46 26 74 29', NULL, 2, 7, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (8, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'MONOT','800178400546','', '', '01 39 46 07 17', NULL, 2, 8, 4);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (9, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'DEGAUDEMONT','040878 401 36','', '', '01 30 24 40 90', '06 85 12 12 51', 2, 9, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (10, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'COAT','060478 400 135','', '', '01 39 46 44 20', '06 74 85 44 60', 2, 10, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (11, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'FILEYSSANT','010878400121','', 'Anne-marie', '01 39 46 88 49', '06 76 57 23 30', 2, 11, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (12, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'THOMASSE','840914200830','', '', '01 39 67 71 15', NULL, 2, 12, 4);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (13, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'LAGREZE', '850 946 100 280','', '', NULL, '06 26 90 33 44', 2, 13, 4);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (14, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'SCHMIED', '0504543 00 686','', '', '01 30 21 73 90', NULL, 2, 14, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (15, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'AUVRAY','09082A100631','', '', '01 30 24 00 84', '06 68 29 08 49', 2, 15, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (16, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'CAVALLERO','246 516 Argentine','', 'Liliana', NULL, '06 84 60 85 59', 2, 16, 3);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (17, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'VINCE','030592301308','', '', '01 47 50 10 58', '', 2, 17, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (18, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'LE TILLY', '100492302121','', '', NULL, '06 16 12 87 26', 2, 18, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (19, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'DASSORI', '050592301517','','', '', '06 62 04 58 99', 2, 19, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (20, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'LOUIS','010375N00267','', 'Josiane', '01 45 80 53 06', '06 80 72 57 57', 2, 20, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (22, NULL, NULL, NULL, NULL, TRUE,NULL,NULL,NULL, NULL,'PAUCHET', 'TU  49360','', '', '01 30 24 72 58', NULL, 2, 22, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (23, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'FOTTELER', '020878402287','', '', '01 30 24 43 93', NULL, 2, 23, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (24, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'MELZER', '75 19 635 7','', '', '01 39 46 57 68', NULL, 2, 24, 4);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (25, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'DECRUZ','050578401915','', '', '01 39 53 57 02', NULL, 2, 25, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (26, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'REVEILHAC', 'xxxxxxx','', '', NULL, NULL, 2, 26, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (27, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'DE BAUDUS', '751791004318','', '', '01 46 23 16 96', '', 2, 27, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (28, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'POIRIER','011078400084','', '', '01 39 02 13 36', NULL, 2, 28, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (29, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'TURBIER','051278400991','', '', '06 99 66 20 22', NULL, 2, 29, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (30, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'ARDACHESSIAN', '960378400733','', NULL, '01 39 46 67 91', NULL, 2, 30, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (31, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'DESMERGER', '071278401719','', 'Pierette', '01 39 46 02 47', NULL, 2, 31, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (32, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'TARAYRE', '961194300958','', 'Justine', '01 45 07 02 15', NULL, 2, 32, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (33, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'MOCAER', '050378403009','', '', '01 30 24 04 23', NULL, 2, 33, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (34, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'FLORENT', '020578401388','', '', '01 30 24 49 71', NULL, 2, 34, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (35, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'FLECHEUX', '080778400119','','', '', '06 81 97 12 41', 2, 35, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (36, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'MEIERS','0404923 00505','', 'Marie', NULL, '06 07 29 07 57', 2, 36, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (37, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'TCHAKERIAN', '090592300345','', '', '01 47 50 84 37', NULL, 2, 37, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (38, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'FASSIER', '090678402824','','', '01 30 24 18 66', NULL, 2, 38, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (39, '', NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'MONOT', '070778402427','','', NULL, NULL, 2, 39, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (40, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'BERTERRETCHE','051178400271','','', '01 39 46 19 82', NULL, 2, 40, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (41, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'DUFLOS', '080978400993','','', '', '06 63 01 80 88', 2, 41, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (42, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'RANNOU', '030778402276 ERGUE GABERIC(29)','','', '01 39 46 01 69', '06 71 01 73 80', 2, 42, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (43, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'SIMONOT', '100778403229 Casablanca','','', '', '06 89 93 28 34', 2, 43, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (44, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'ARDACHESSIAN', '070378400562 Marseille','','', '01 39 46 67 91', NULL, 2, 44, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (45, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'COLOMBIER', '110192300167 Paris','','', '', '06 12 78 18 32', 2, 45, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (46, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'MOREAU', '061092302078 Boulogne','','', '', '06 12 99 38 81', 2, 46, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (47, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'PROUDHON','030792301039','','', '09 50 16 27 37', '06 75 93 24 86', 2, 47, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (48, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'MOATTI','060278400777 Yveliens','','', '01 30 24 46 76', '', 2, 48, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (49, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'BRICIF','F923108950 Hauts-de-Seine','', 'Rachida','', '06 28 04  47 87', 2, 49, 5);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (50, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'CORLAY-FRAVAL','091078400023 Yvelines','','', NULL, '06 25 58 65 28', 2, 50, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (51, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'VILLAIN','020492201327 Hauts-de-Seine','','', NULL, '06 89 64 92 08', 2, 51, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (52, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'GRAINAT-BOURIH', '010792301317','', 'Aicha', NULL, '06 19 40 72 35', 2, 52, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (53, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'PICARD', '858890','','', '01 47 50 66 11', NULL, 2, 53, 4);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (54, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'LINDEMANN','010892301444 Boulogne','', 'Marie-Helene', '01 48 25 37 70', NULL, 2, 54, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (55, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'MEZZADRI', '000 792300201 Bouogne','','', NULL, '06 07 55 89 46', 2, 55, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (56, NULL, NULL, NULL, NULL, TRUE, '','',NULL,NULL, 'GOOSENS','100978404619 Yvelines','', '', '01 30 24 18 60', '', 2, 56, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (57, NULL, NULL, NULL, NULL, TRUE, '','',NULL,NULL, 'ELIAN', '001192301121 Boulogne','', 'Judith', '01 47 50 26 66', '', 2, 57, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (58, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'VANDAMME','080392301709','', 'Marie-claude', '', '06 80 88 88 93', 2, 58, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (59, NULL, NULL, NULL, NULL, TRUE, '','',NULL,NULL, 'HODAN', '050378401457','', '', '', '06 73 38 90 07', 2, 59, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (60, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'BOYADJIAN', '020792301711 Boulogne','','', '', '06 14 56 06 36', 2, 60, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (61, NULL, NULL, NULL, NULL, TRUE, '','',NULL,NULL, 'BRUNEL', '041178400764 Yvelines','', '', '01 30 70 68 21', '', 2, 61, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (62, NULL, NULL, NULL, NULL, TRUE, '','',NULL,NULL, 'MEYRIGNAC', '081178401598','', '', '01 30 24 03 14', '06 42 22 21 19', 2, 62, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (63, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'POIRIEL', '93ID69597','', '', NULL, '06 67 67 28 38', 2, 63, 3);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (64, NULL, NULL, NULL, NULL, TRUE, '','',NULL,NULL, 'BASURTO','050877200568','', '', '', '06 81 01 41 16', 2, 64, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (65, NULL, NULL, NULL, NULL, TRUE, '','',NULL,NULL, 'MONFERRER', '020592300506 Boulogne','', 'Dominique', '01 47 09 16 71', '', 2, 65, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (66, NULL, NULL, NULL, NULL, TRUE, 'quelven.catherine@neuf.fr','',NULL,NULL, 'QUELVEN', '110278402500','', 'Catherine', '', '06 82 07 77 79', 2, 66, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (67, NULL, NULL, NULL, NULL, TRUE, 'catherine.rembry@neuf.fr','',NULL,NULL, 'REMBRY', '060392302014','', '', '01 47 50 63 52', '06 81 45 00 33', 2, 67, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (68, NULL, NULL, NULL, NULL, TRUE, 'celine.mauries@neuf.fr','',NULL,NULL, 'MAURIES', '011075400666','', '', '01 47 09 98 82', '', 2, 68, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (69, NULL, NULL, NULL, NULL, TRUE, 'sylvie.lecam@free.fr','',NULL,NULL, 'LECAM', '030591300370','', 'Sylvie', '', '06 16 77 24 91', 2, 69, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (70, NULL, NULL, NULL, NULL, TRUE, 'olympe7@yahoo.fr','',NULL,NULL, 'LAGREZE','10AL31259','', '', '09 81 93 05 27', '', 2, 70, 3);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (71, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'PASTERNAK', '','', 'Christine', '01 30 43 60 82', NULL, 2, 71, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (72, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'MAITRE', '031092301622','', '', '01 47 50 22 94', NULL, 2, 72, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (73, NULL, NULL, NULL, NULL, TRUE, 'e.prieur@hotmail.fr','',NULL,NULL, 'PRIEUR', '951 192 300 978','', '', '01 47 50 55 66', '', 2, 73, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (74, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'LEONETTI','020278401433','', '', '09 77 02 28 60', '', 2, 74, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (75, NULL, NULL, NULL, NULL, TRUE, 'marie-helene.berland@club-internet.fr','',NULL,NULL, 'BERLAND', '051192301692','', '', '', '06 83 21 91 31', 2, 75, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (76, NULL, NULL, NULL, NULL, TRUE, 'caroline.goehrs@hotmail.fr','',NULL,NULL, 'GOEHRS','990478403801','', 'Caroline', '', '06 21 26 53 47', 2, 76, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (77, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'LIGNEAU', '990478404396','', '', '01 39 46 92 39', NULL, 2, 77, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (78, NULL, NULL, NULL, NULL, TRUE, '','',NULL,NULL, 'ANDREAU','061178401320','', '', '', '06 31 74 98 69', 2, 78, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (79, NULL, NULL, NULL, NULL, TRUE, 'lysianechau@wanadoo.fr','',NULL,NULL, 'CHAUVEAU', '020378401805','', 'Lysiane', '', '06 66 91 96 13', 2, 79, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (80, NULL, NULL, NULL, NULL, TRUE, 'patrick.chauvel@hotmail.fr','',NULL,NULL, 'BAZIN', '080878400330','', '', '01 40 75 64 17', '', 2, 80, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (81, NULL, NULL, NULL, NULL, TRUE, 'kvatel@orange.fr','',NULL,NULL, 'VATEL', '100778402221','', 'Karen', '01 39 20 03 69', '06 87 24 42 12', 2, 81, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (82, NULL, NULL, NULL, NULL, TRUE, '','',NULL,NULL, 'CHAPRON','101192300131','', '', '01 47 50 11 19', '06 47 56 55 20', 2, 82, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (83, NULL, NULL, NULL, NULL, TRUE, 'nancy.pauchet@mbda-systems.com','',NULL,NULL, 'PAUCHET', '04DH27021','', '', '', '06 87 38 03 05', 2, 83, 3);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (84, NULL, NULL, NULL, NULL, TRUE, 'dominique.ardouin@orange.fr','',NULL,NULL, 'ARDOUIN', '020178401014','', 'Dominique', '', '06 63 74 24 03', 2, 84, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (85, NULL, NULL, NULL, NULL, TRUE, 'mcdiebold@gmail.com','',NULL,NULL, 'DIEBOLD','050878400182','', '', '', '06 83 57 87 70', 2, 85, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (86, NULL, NULL, NULL, NULL, TRUE, '','',NULL,NULL, 'PIERRET', '021092301019','', 'Nadine', '01 47 50 37 16', '', 2, 86, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (88, NULL, NULL, NULL, NULL, TRUE, 'g.gaybrigitte@orange.fr','',NULL,NULL, 'GAY', 'xxxxxxx','', 'Brigitte', '', '06 85 52 12 72', 2, 88, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (89, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'DEGOLVE', '010878400134','', 'Marie-Noelle', '01 30 70 65 06', NULL, 2, 89, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (90, NULL, NULL, NULL, NULL, TRUE, '','',NULL,NULL, 'JAIN', NULL,'', '', '01 39 55 88 26', '', 2, 90, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (91, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'VASSAL', NULL,'', '', '', '06 11 71 88 22', 2, 91, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (92, NULL, NULL, NULL, NULL, TRUE, '','',NULL,NULL, 'CASAUX','041278400084','', '', '', '06 82 00 73 23', 2, 92, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (93, NULL, NULL, NULL, NULL, TRUE, 'sylvie.devulder@free.fr','',NULL,NULL, 'DEVULDER', '070378304153','', 'Sylvie', '', '06 83 16 99 72', 2, 93, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (94, NULL, NULL, NULL, NULL, TRUE, '','',NULL,NULL, 'PELTIER','010878402403','', 'Odile', '01 39 55  60 91', '', 2, 94, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (95, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'NIEL','090592301604','', '', '01 47 50 83 10', '', 2, 95, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (96, NULL, NULL, NULL, NULL, TRUE, 'pierre.francois.brossel@wanadoo.fr','',NULL,NULL,'BROSSEL', '031292300545','', '', '01 30 50 05 88', '', 2, 96, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (97, NULL, NULL, NULL, NULL, TRUE, '','',NULL,NULL, 'LANCIEN','070878401660','', '', '01 39 46 68 47', '', 2, 97, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (98, NULL, NULL, NULL, NULL, TRUE, 'sosomacha@hotmail.fr','',NULL,NULL,'MAROUBY', '081292300349','', '', '', '06 62 12 49 07', 2, 98, 2);
+INSERT INTO t_client (id, champ_numerique_1, champ_numerique_2, commentaire, date_naissance, deposante, email, login, montant_depose, montant_du, nom, numero_identite, password, prenom, telephone_fixe, telephone_portable, civilite_fk, adresse_fk, type_identite_fk) VALUES (99, NULL, NULL, NULL, NULL, TRUE, NULL,'',NULL,NULL, 'AURENSAN','050578401777','', '', '01 30 24 20 06', NULL, 2, 99, 2);
+
+CREATE SEQUENCE depot_sequence
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    NO MAXVALUE
+    NO CYCLE;
+
+CREATE SEQUENCE article_sequence
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    NO MAXVALUE
+    NO CYCLE;
+
+CREATE TABLE SEQUENCE (SEQ_NAME VARCHAR(50) NOT NULL, SEQ_COUNT DECIMAL, PRIMARY KEY (SEQ_NAME));
+INSERT INTO SEQUENCE(SEQ_NAME, SEQ_COUNT) values ('SEQ_GEN', 0);
