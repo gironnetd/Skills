@@ -1,16 +1,16 @@
 <div id="toc">
 <ul style="list-style: none;">
 <summary>
-<h1>Formation Développeur d'applications iOS</h1>
+<h1>Formation Développeur d'applications iOS</h1><br>
 <h4>Le Chesnay-Rocquencourt, Île-de-France, à distance<br/>
   févr. 2020 - déc. 2021</h4>
 </summary>
 </ul>
 </div>
 
-<img src="https://github.com/gironnetd/parcours-de-formations/blob/ios/Realisez%20un%20projet%20libre/screenshots/iphone/screenshot-5.png" alt="Image 1" width="250" style="display:inline-block; margin-right:10px;"> <img src="https://github.com/gironnetd/parcours-de-formations/blob/ios/Reciplease/screenshots/screenshot-3.png" alt="Image 1" width="250" style="display:inline-block; margin-right:10px;"> <img src="https://github.com/gironnetd/parcours-de-formations/blob/ios/Le Baluchon/screenshots/screenshot-1.png" alt="Image 1" width="250" style="display:inline-block; margin-right:10px;">
+<img src="https://github.com/gironnetd/Skills/blob/ios/diploma/Realisez%20un%20projet%20libre/screenshots/iphone/screenshot-5.png" alt="Image 1" width="250" style="display:inline-block; margin-right:10px;"> <img src="https://github.com/gironnetd/Skills/blob/ios/diploma/Reciplease/screenshots/screenshot-3.png" alt="Image 1" width="250" style="display:inline-block; margin-right:10px;"> <img src="https://github.com/gironnetd/Skills/blob/ios/diploma/Le Baluchon/screenshots/screenshot-1.png" alt="Image 1" width="250" style="display:inline-block; margin-right:10px;">
 
-<img src="https://github.com/gironnetd/parcours-de-formations/blob/ios/Instagrid/screenshots/screenshot-5.png" alt="Image 1" width="250" style="display:inline-block; margin-right:10px;"> <img src="https://github.com/gironnetd/parcours-de-formations/blob/ios/CountOnMe/screenshots/screenshot-3.png" alt="Image 1" width="250" style="display:inline-block; margin-right:10px;">
+<img src="https://github.com/gironnetd/Skills/blob/ios/diploma/Instagrid/screenshots/screenshot-5.png" alt="Image 1" width="250" style="display:inline-block; margin-right:10px;"> <img src="https://github.com/gironnetd/Skills/blob/ios/diploma/CountOnMe/screenshots/screenshot-3.png" alt="Image 1" width="250" style="display:inline-block; margin-right:10px;">
 
 La formation contient plusieurs projets soit d'applications, soit de documentations fonctionnelles et techniques.
 
